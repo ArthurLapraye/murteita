@@ -66,10 +66,17 @@ if __name__=="__main__":
 	title=None
 	sdict=None
 	
+	HEADERS=["id","longueur","t_ass","n_ass","e_ass","o_ass","word_t","word_n","word_e"]
+	eassimil=0
 	nassimil=0
+	tassimil=0
 	oassimil=0
 	passit=True
 	slength=0
+	
+	word_n=0
+	word_t=0
+	word_e=0
 	
 	
 	for rank in range(beginning,end,10000):
@@ -94,28 +101,46 @@ if __name__=="__main__":
 					passit=False
 			
 			if passit:
-				if (word["normalized"][-1]==nextword["normalized"][0] ) and word["word"][-1]=="n" and word["normalized"] != "n":
-					#print(word["normalized"],nextword["normalized"],word["word"])
-					nassimil+=1
-				elif (word["normalized"][-1]==nextword["normalized"][0] ) and word["word"][-1] != "n" and word["word"][-1]!=word["normalized"][-1]:
-					print(word["normalized"],nextword["normalized"],word["word"])
+				if word["word"][-1]=="n":
+					word_n+=1
+					if (word["normalized"][-1]==nextword["normalized"][0] ) and word["normalized"][-1] != "n":
+						#print("N",word["normalized"],nextword["normalized"],word["word"])
+						nassimil+=1
+				if word["word"][-1]=="t":
+					word_t+=1	
+					if  (word["normalized"][-1]==nextword["normalized"][0] ) and word["normalized"][-1] != "t":
+						#print("T",word["normalized"],nextword["normalized"],word["word"])
+						tassimil+=1
+				if word["word"][-1]=="t":
+					word_e+=1	
+					if  (word["normalized"][-1]==nextword["normalized"][0] ) and word["normalized"][-1] != "e":
+						#print("E",word["normalized"],nextword["normalized"],word["word"])
+						eassimil+=1
+				
+				if (word["normalized"][-1]==nextword["normalized"][0] ) and word["word"][-1] != "n" and word["word"][-1]!=word["normalized"][-1]:
+					print("O",word["normalized"],nextword["normalized"],word["word"])
 					oassimil+=1
 				
 			
 			
 			if sentence_id != sentence['sentence_origid']:
-				fileoutput+="\n"+"\t".join(map(str,[sentence_id,slength,nassimil,oassimil]))
+				fileoutput+="\n"+"\t".join(map(str,[sentence_id,slength,tassimil,nassimil,eassimil,oassimil,word_t,word_n,word_e]))
 				sentence_id=sentence['sentence_origid']
+				tassimil=0
 				oassimil=0
-				slength=0
 				nassimil=0
+				eassimil=0
+				word_n=0
+				word_t=0
+				word_e=0
+				slength=0
 
 			
 			if title != sentence['text_title']:
 				if title:
 					with open(outfolder+title+".txt","w") as out:
 						out.write(fileoutput)
-				fileoutput="id\tlen\tnass\toass"
+				fileoutput="\t".join(HEADERS)
 				title=sentence['text_title']
 				print(title)
 			
