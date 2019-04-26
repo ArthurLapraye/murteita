@@ -9,6 +9,8 @@ import functools
 
 from collections import defaultdict
 
+from sknCONLL import load_skn
+
 alphabet={'ᴱ', 'h', '’', 'ᴉ', 'ϑ', 'Ä', 'c', 'ᵏ', 'J', '˘', 'ˉ', 'E', 'B', 'a', 'ᵉ', '₍', '0', 'Ǹ', 'ŧ', '”', '“', '1', '»', 'ᵃ', 'ĕ', 'u', 'i', '%', 'q', '̬', 'd', 'ò', 'ê', 'P', '‿', 'R', 'ᶠ', 'ʸ', '"', 'ᴋ', 'Z', '–', 'ᵑ', 'Y', 'ʷ', '?', 'M', ' ', 'û', '͔', 'ẅ', 'ʜ', '̮', ']', 'ʲ', 'ŏ', 'Ŏ', '^', 'ᴹ', 'Ì', '\uf21d', ')', 'á', '̳', 'ẁ', '\u0ff1', 'w', '+', 'ᴍ', 'Ĺ', 'å', 'ᴡ', 'χ', 'A', ',', '.', 'é', '*', '§', 'ŕ', 'N', '_', 'I', 'ŋ', 'b', 'ᵐ', 'ỳ', 'e', 'ŷ', 'k', 'ɦ', 'p', 'Ŭ', 'ə', 'ʟ', '[', 'ɢ', 'V', 'H', 'r', '°', 'W', 'ä', '̇', 'ḙ', 'ᴰ', 'ɪ', '̰', 'ʏ', 'ð', '\u1cff', 'ᴅ', 'ᴇ', '̹', 'ᵗ', 'ȯ', 'ì', '̲', 'ʀ', 'ᴺ', 'C', 's', 'U', 'ḭ', 'ᴵ', 'ᴠ', 'ɔ', 'ʾ', 'ʼ', 'ᴬ', 'y', 'ᴜ', '͇', 'Ń', 'ᵎ', 'ʙ', 'ᵻ', 'ö', '!', '5', '́', 'è', 'f', 'î', 'И', 't', '̀', 'Ö', 'ù', 'ị', '̄', '=', 'ṋ', '∼', 'β', 'δ', '-', 'à', 'D', 'ᴼ', 'Ȯ', 'Î', 'ʳ', 'v', 'ĺ', '(', 'ⁱ', 'ᴛ', 'ė', '~', '̥', 'ᵒ', '̭', 'ᵛ', 'ᵊ', 'ᵁ', '̆', 'È', 'ⁿ', '̜', 'ˈ', 'ú', 'ʰ', 'Å', '̤', 'ᴊ', '\xa0', '̈', 'ʿ', 'ś', 'n', 'ń', 'ḱ', 'ɐ', 'Ò', 'F', 'ǹ', 'ˢ', 'í', 'š', 'ǰ', '̗', 'ᵘ', 'O', 'ŭ', 'ᴮ', 'T', 'ᴏ', 'o', 'ĭ', 'ḛ', 'ˡ', 'ó', 'ᴶ', 'À', '\u0fff', 'ᴎ', 'l', 'z', "'", 'g', 'ₒ', '#', 'j', 'ṵ', 'ô', '<', 'm', 'L', '´', 'K', '`', 'ɴ', 'G', '̂', '͕', 'ɛ', 'ˀ', 'S', 'ᵖ', 'â', '3', 'ă', 'ᴀ'}
 
 
@@ -26,8 +28,9 @@ standnorm=defaultdict(set)
 normraw=defaultdict(set)
 paradigm=defaultdict(set)
 
-def matchfunction(word,prevword,nextword,r1,r2):
-	
+def matchfunc(stand,dial):
+	r1=stand
+	r2=dial
 
 	if r1==r2:
 		return 10
@@ -35,69 +38,18 @@ def matchfunction(word,prevword,nextword,r1,r2):
 		return 10
 	elif r1=="d" and r2=="r":
 		return 7
-		
+	elif r1=="ö" and r2 in ["ä"]:
+		return 7
 	elif r1=="e" and r2=="i":
 		return 4
 	
 	else:
 		return -10
 
-matchfunc=functools.partial(matchfunction,"","","")
+#matchfunc=functools.partial(matchfunction,"","","")
 
 def gapfunction(x,y):
 	return 0
-
-def load_skn(sknpath):
-	with open(sknpath) as sknfile:
-		return json.loads(sknfile.read())
-
-def prettify(SKN,n):
-	word=SKN['kwic'][n]["tokens"][0]
-	#print()
-	sentence=SKN['kwic'][n]["structs"]
-	#print(format_alignment(*[0]))
-	#a=list(align.globalcs(list(word["normalized"].lower() ),list(word["word"].lower() ),matchfunc,-1,-0.5,gap_char=['-'])[0]  )
-	"""
-	
-    ADJ: adjective
-    ADP: adposition
-    ADV: adverb
-    AUX: auxiliary
-    CCONJ: coordinating conjunction
-    DET: determiner
-    INTJ: interjection
-    NOUN: noun
-    NUM: numeral
-    PART: particle
-    PRON: pronoun
-    PROPN: proper noun
-    PUNCT: punctuation
-    SCONJ: subordinating conjunction
-    SYM: symbol
-    VERB: verb
-    X: other
-
-	"""
-	#b= [ "".join(a[0]), "".join(a[1]) ] + a[2:]
-	phonofeatures=[] #[x for x in zip(*b[:2]) if x[0] != x[1] ]
-	
-	uposdict={"A":"ADJ", "Adp":"ADP", "Adv":"ADV", "Foreign":"X", "Interj":"INTJ", "N":"NOUN", "Num":"NUM", "Pron":"PRON", "Punct":"PUNCT", "Symb":"SYMB", "V":"VERB", "CSUBCAT_CS":"SCONJ", "CSUBCAT_CC":"CCONJ" }
-	
-	ID=word["id"]
-	FORM= word["normalized"] if NORMALFLAG else word["original"]
-	LEMMA = word["lemma"]
-	UPOS = uposdict[ word["pos"]+word["msd"].split("|")[0] ] if word["pos"] == "C" else uposdict[ word["pos"]]
-	XPOS = word["pos"]
-	FEATS = word["msd"]
-	HEAD =word["dephead"] 
-	DEPREL = word["deprel"]
-	DEPS = HEAD+':'+DEPREL
-	MISC = "_"
-	
-	
-	return "\t".join(map(str,[ID,FORM,LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC]))
-	#sentence["text_dialect_region"], sentence["text_name"], sentence["text_parish"], str(phonofeatures)] )
-#	return (" ".join([x["original"] for x in SKN['kwic'][n]['tokens']])+"\n"+" ".join([x["word"] for x in SKN['kwic'][n]['tokens']]))
 
 if __name__=="__main__":
 	#SKN=load_skn(sys.argv[1])
@@ -145,8 +97,8 @@ if __name__=="__main__":
 				if (word["normalized"][-1]==nextword["normalized"][0] ) and word["word"][-1]=="n" and word["normalized"] != "n":
 					#print(word["normalized"],nextword["normalized"],word["word"])
 					nassimil+=1
-				elif (word["normalized"][-1]==nextword["normalized"][0] ) and word["word"][-1] != "n":
-					#print(word["normalized"],nextword["normalized"],word["word"])
+				elif (word["normalized"][-1]==nextword["normalized"][0] ) and word["word"][-1] != "n" and word["word"][-1]!=word["normalized"][-1]:
+					print(word["normalized"],nextword["normalized"],word["word"])
 					oassimil+=1
 				
 			
