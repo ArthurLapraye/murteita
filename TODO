@@ -1,0 +1,17 @@
+Extraction automatique de traits
+=> alignement de mot
+=> alignements de phonèmes
+=> annotation syntaxique 
+
+=> attention particulières aux positions préverbales
+
+Clustering sur traits phonos, traits morphos, traits syntaxiques
+
+=> Organiser des listes de cognats par lieu
+
+## À faire :
+	=> finir l'extraction des traits de sandhi pour chaque phrase, sandhi total et partiel
+	=> utiliser biopairwise pour variations de phonèmes simples
+	=> 
+	=> rajouter le trait binaire SV vs VS.
+	
