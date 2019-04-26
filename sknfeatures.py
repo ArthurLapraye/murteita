@@ -100,7 +100,7 @@ if __name__=="__main__":
 				except FileNotFoundError as e:
 					passit=False
 			
-			if passit:
+			if passit and word["word"]:
 				if word["word"][-1]=="n":
 					word_n+=1
 					if (word["normalized"][-1]==nextword["normalized"][0] ) and word["normalized"][-1] != "n":
@@ -118,8 +118,12 @@ if __name__=="__main__":
 						eassimil+=1
 				
 				if (word["normalized"][-1]==nextword["normalized"][0] ) and word["word"][-1] != "n" and word["word"][-1]!=word["normalized"][-1]:
-					print("O",word["normalized"],nextword["normalized"],word["word"])
+					#print("O",word["normalized"],nextword["normalized"],word["word"])
 					oassimil+=1
+			elif not word["word"]:
+				logging.error("Problem at "+title+" "+str(word))
+				
+			
 				
 			
 			
