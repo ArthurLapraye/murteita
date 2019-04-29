@@ -1,3 +1,5 @@
+##Plan de bataille
+
 Extraction automatique de traits
 => alignement de mot
 => alignements de phonèmes
@@ -5,13 +7,18 @@ Extraction automatique de traits
 
 => attention particulières aux positions préverbales
 
-Clustering sur traits phonos, traits morphos, traits syntaxiques
+Clustering sur traits phonos, traits morphos, traits syntaxiques, séparément et ensemble
 
-=> Organiser des listes de cognats par lieu
+## En cours
+
+	=> finir l'extraction des traits de sandhi pour chaque phrase, sandhi total et partiel
+		=> utiliser biopairwise pour variations de phonèmes simples
 
 ## À faire :
-	=> finir l'extraction des traits de sandhi pour chaque phrase, sandhi total et partiel
-	=> utiliser biopairwise pour variations de phonèmes simples
-	=> 
+
+	=> Trouver une façon correcte d'agréger tout ça
+	=> Quel paquet R utiliser
 	=> rajouter le trait binaire SV vs VS.
+	=> Organiser des listes de cognats par lieu 
+
 	
