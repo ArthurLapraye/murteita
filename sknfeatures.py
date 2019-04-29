@@ -66,9 +66,12 @@ if __name__=="__main__":
 	title=None
 	sdict=None
 	
-	HEADERS=["id","longueur","t_ass","n_ass","e_ass","o_ass","word_t","word_n","word_e"]
+	HEADERS=["id","longueur","t_ass","n_ass","mp_ass","n_n","e_ass","o_ass","word_t","word_n","word_e"]
 	eassimil=0
 	nassimil=0
+	mpassimil=0
+	nn=0
+	
 	tassimil=0
 	oassimil=0
 	passit=True
@@ -106,6 +109,12 @@ if __name__=="__main__":
 					if (word["normalized"][-1]==nextword["normalized"][0] ) and word["normalized"][-1] != "n":
 						#print("N",word["normalized"],nextword["normalized"],word["word"])
 						nassimil+=1
+					elif (word["normalized"][-1]=="m" and nextword["normalized"][0] == "p":
+						mpassimil+=1
+					elif nextword["normalized"][-1] == "n":
+						nn += 1
+					
+					
 				if word["word"][-1]=="t":
 					word_t+=1	
 					if  (word["normalized"][-1]==nextword["normalized"][0] ) and word["normalized"][-1] != "t":
@@ -128,12 +137,14 @@ if __name__=="__main__":
 			
 			
 			if sentence_id != sentence['sentence_origid']:
-				fileoutput+="\n"+"\t".join(map(str,[sentence_id,slength,tassimil,nassimil,eassimil,oassimil,word_t,word_n,word_e]))
+				fileoutput+="\n"+"\t".join(map(str,[sentence_id,slength,tassimil,nassimil,mpassimil,nn,eassimil,oassimil,word_t,word_n,word_e]))
 				sentence_id=sentence['sentence_origid']
 				tassimil=0
 				oassimil=0
 				nassimil=0
 				eassimil=0
+				mpassimil=0
+				nn=0
 				word_n=0
 				word_t=0
 				word_e=0
