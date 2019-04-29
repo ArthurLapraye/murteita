@@ -55,7 +55,9 @@ def prettify(SKN,n):
 	HEAD =word["dephead"] 
 	DEPREL = word["deprel"]
 	DEPS = HEAD+':'+DEPREL
-	MISC = "_"
+	MISC = "_"+sentence['sentence_origid']";"+word["word"]
+	
+	
 	
 	
 	return "\t".join(map(str,[ID,FORM,LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC]))
