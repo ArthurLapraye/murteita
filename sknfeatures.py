@@ -109,7 +109,7 @@ if __name__=="__main__":
 					if (word["normalized"][-1]==nextword["normalized"][0] ) and word["normalized"][-1] != "n":
 						#print("N",word["normalized"],nextword["normalized"],word["word"])
 						nassimil+=1
-					elif (word["normalized"][-1]=="m" and nextword["normalized"][0] == "p":
+					elif word["normalized"][-1]=="m" and nextword["normalized"][0] == "p":
 						mpassimil+=1
 					elif nextword["normalized"][-1] == "n":
 						nn += 1
