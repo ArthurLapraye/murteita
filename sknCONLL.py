@@ -55,7 +55,7 @@ def prettify(SKN,n):
 	HEAD =word["dephead"] 
 	DEPREL = word["deprel"]
 	DEPS = HEAD+':'+DEPREL
-	MISC = "_"+sentence['sentence_origid']";"+word["word"]
+	MISC = "_"+str(sentence['sentence_origid'])+";"+word["word"] if word["word"] else "_" + "_"
 	
 	
 	

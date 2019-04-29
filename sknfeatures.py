@@ -126,7 +126,7 @@ if __name__=="__main__":
 						#print("E",word["normalized"],nextword["normalized"],word["word"])
 						eassimil+=1
 				
-				if (word["normalized"][-1]==nextword["normalized"][0] ) and word["word"][-1] != "n" and word["word"][-1]!=word["normalized"][-1]:
+				if (word["normalized"][-1]==nextword["normalized"][0] ) and word["word"][-1]!=word["normalized"][-1]:
 					#print("O",word["normalized"],nextword["normalized"],word["word"])
 					oassimil+=1
 			elif not word["word"]:
