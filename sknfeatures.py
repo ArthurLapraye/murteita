@@ -95,6 +95,10 @@ if __name__=="__main__":
 	word_t=0
 	word_e=0
 	
+	alignment="_"
+	VSsentence = False
+	sinter=False
+
 	
 	for rank in range(beginning,end,10000):
 		if rank == 0:
@@ -145,13 +149,17 @@ if __name__=="__main__":
 					oassimil+=1
 			elif not word["word"]:
 				logging.error("Problem at "+title+" "+str(word))
+			
+			if len(word["msd"]) > 1:
+				#print(word["msd"])
+				msd=dict([tuple(x.split("_",1)) for x in word["msd"].split("|")])
 				
-			msd=dict([tuple(x.split()) for x in word["msd"].split("|")])
+				if msd.get("SUBCAT",None) == "Interr":
+					sinter=True
 			
-			if msd.get("SUBCAT",None) == "Interr":
-				sinter=True
-			
-			if msd.get("
+			if "subj" in word["deprel"]:
+				VSsentence=(int(word["id"]) > int(word["dephead"] ))
+					
 				
 			
 			
@@ -168,6 +176,10 @@ if __name__=="__main__":
 				word_t=0
 				word_e=0
 				slength=0
+				
+				alignment="_"
+				VSsentence = False
+				sinter=False
 
 			
 			if title != sentence['text_title']:
