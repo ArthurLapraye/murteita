@@ -147,11 +147,16 @@ if __name__=="__main__":
 				logging.error("Problem at "+title+" "+str(word))
 				
 			msd=dict([tuple(x.split()) for x in word["msd"].split("|")])
+			
+			if msd.get("SUBCAT",None) == "Interr":
+				sinter=True
+			
+			if msd.get("
 				
 			
 			
 			if sentence_id != sentence['sentence_origid']:
-				fileoutput+="\n"+"\t".join(map(str,[sentence_id,slength,tassimil,nassimil,mpassimil,nn,eassimil,oassimil,word_t,word_n,word_e]))
+				fileoutput+="\n"+"\t".join(map(str,[sentence_id,slength,tassimil,nassimil,mpassimil,nn,eassimil,oassimil,word_t,word_n,word_e,str(VSsentence).upper(),alignment,str(sinter).upper()]))
 				sentence_id=sentence['sentence_origid']
 				tassimil=0
 				oassimil=0
