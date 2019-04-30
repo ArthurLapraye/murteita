@@ -66,7 +66,21 @@ if __name__=="__main__":
 	title=None
 	sdict=None
 	
-	HEADERS=["id","longueur","t_ass","n_ass","mp_ass","n_n","e_ass","o_ass","word_t","word_n","word_e"]
+	HEADERS=["id","longueur","t_ass","n_ass","mp_ass","n_n","e_ass","o_ass","word_t","word_n","word_e","VS","align","interrog"]
+	headershelp="""id : id de la phrase
+				  longueur : longueur en mot de la phrase
+				  t_ass nombre de t en fin de mot assimilés totalement
+				  n_ass nombre de n en fin de mot assimilés totalement
+				  mp_ass nombre de n assmilés à m devant p 
+				  n_n nombre de n en fin de mot suivi de n initial
+				 e_ass nombre de mot finissant en -e dans le standard et ayant leur glottale assimilée
+				 o_ass autres assimilations de sandhi
+				 word_t mots finissants en t
+				 word_n
+				 word_e
+				 
+				 VS : trait binaire SV ou VS
+				 align : alignement utilisé parmi VSO, OSV, OVS, etc"""
 	eassimil=0
 	nassimil=0
 	mpassimil=0
@@ -132,7 +146,7 @@ if __name__=="__main__":
 			elif not word["word"]:
 				logging.error("Problem at "+title+" "+str(word))
 				
-			
+			msd=dict([tuple(x.split()) for x in word["msd"].split("|")])
 				
 			
 			
