@@ -9,6 +9,10 @@ Extraction automatique de traits
 
 Clustering sur traits phonos, traits morphos, traits syntaxiques, séparément et ensemble
 
+## FAIT
+
+	=> rajouter le trait binaire SV vs VS.
+
 ## En cours
 
 	=> finir l'extraction des traits de sandhi pour chaque phrase, sandhi total et partiel
@@ -18,7 +22,7 @@ Clustering sur traits phonos, traits morphos, traits syntaxiques, séparément e
 
 	=> Trouver une façon correcte d'agréger tout ça
 	=> Quel paquet R utiliser
-	=> rajouter le trait binaire SV vs VS.
+
 	=> Organiser des listes de cognats par lieu 
 
 	
