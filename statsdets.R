@@ -6,11 +6,11 @@ data=new.env()
 
 for (f in sfeaturefiles) { data[[ f ]] <- read.csv(f,header=TRUE,sep="\t") }
 
-for (n in names(data)) { }
+for (n in names(data)) { print(n) ; print(summary(data[[ n ]])) }
 
 
 #lapply(files, function(x) {
- #   t <- read.csv(x, header=TRUE,sep="\t") # load file
+ #   t <- read.csv(x, header=TRUE,sep="\t") # load file11
     # apply function
    
     # write to file
