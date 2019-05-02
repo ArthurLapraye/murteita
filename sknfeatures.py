@@ -28,23 +28,20 @@ standnorm=defaultdict(set)
 normraw=defaultdict(set)
 paradigm=defaultdict(set)
 
-def matchfunc(stand,dial):
-	r1=stand
-	r2=dial
-
+def matchfunc(dial,stand):
+	r1=stand.lower()
+	r2=dial.lower()
+	
+	pairesproches=[("t","d"),("d","r"),("ä","e"),("ö","ä"),("o","a"),("o","u"),("i","j")]
+	
 	if r1==r2:
 		return 10
-	elif (r1,r2) in same:
-		return 10
-	elif r1=="d" and r2=="r":
-		return 7
-	elif r1=="ö" and r2 in ["ä"]:
-		return 7
-	elif r1=="e" and r2=="i":
-		return 4
-	
 	else:
-		return -10
+		for p in pairesproches:
+			if r1 in p and r2 in p:
+				return 7
+		else:
+			return -20
 
 #matchfunc=functools.partial(matchfunction,"","","")
 
@@ -108,6 +105,11 @@ if __name__=="__main__":
 		b=rank
 		for x,y in enumerate(SKN["kwic"]):
 			word=y["tokens"][0]
+			
+			if word["normalized"]:
+				alignement=align.globalcs(list(word["word"]),list(word["normalized"]),matchfunc,-10,-1, gap_char=['-'])
+				print(format_alignment(*alignement[0]))
+			
 			sentence=y["structs"]
 			
 			slength+=1
@@ -184,7 +186,7 @@ if __name__=="__main__":
 			
 			if title != sentence['text_title']:
 				if title:
-					with open(outfolder+title+".txt","w") as out:
+					with open(outfolder+title+".csv","w") as out:
 						out.write(fileoutput)
 				fileoutput="\t".join(HEADERS)
 				title=sentence['text_title']
