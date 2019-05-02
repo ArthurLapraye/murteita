@@ -5,7 +5,7 @@ import json
 import sys
 import logging
 from Bio.pairwise2 import format_alignment, align
-import functools
+from functools import partial
 
 from collections import defaultdict
 
@@ -28,11 +28,17 @@ standnorm=defaultdict(set)
 normraw=defaultdict(set)
 paradigm=defaultdict(set)
 
+#def gapfunc(x,y):
+	
+
 def matchfunc(dial,stand):
 	r1=stand.lower()
 	r2=dial.lower()
 	
-	pairesproches=[("t","d"),("d","r"),("ä","e"),("ö","ä"),("o","a"),("o","u"),("i","j")]
+	
+	spaces=(" ","-")
+	
+	pairesproches=[("t","d"),("d","r"),("ä","e"),("ö","ä"),("o","a"),("o","u"),("i","j"),("t","s"),("ð","d"),("i","e")]
 	
 	if r1==r2:
 		return 10
@@ -40,13 +46,25 @@ def matchfunc(dial,stand):
 		for p in pairesproches:
 			if r1 in p and r2 in p:
 				return 7
+		elif:
+			r1 == "n" and r2 in ["m","v","j","n","k","p","s"]:
+				return 5
 		else:
-			return -20
+			return -10
 
 #matchfunc=functools.partial(matchfunction,"","","")
 
-def gapfunction(x,y):
-	return 0
+def gap_functionA(word, normalized,x,y):
+	#print(word, normalized, x,y)
+	#print(word[x:],normalized[x:])
+	return (-10 + -1*y)
+
+def gap_functionB(word, normalized,x,y):
+	#print(word, normalized, x,y)
+	if x < len(word) and word[x] == word[x-1]:
+		return -0.5*y
+	else:
+		return (-5-0.5*y)
 
 if __name__=="__main__":
 	#SKN=load_skn(sys.argv[1])
@@ -106,9 +124,17 @@ if __name__=="__main__":
 		for x,y in enumerate(SKN["kwic"]):
 			word=y["tokens"][0]
 			
-			if word["normalized"]:
-				alignement=align.globalcs(list(word["word"]),list(word["normalized"]),matchfunc,-10,-1, gap_char=['-'])
-				print(format_alignment(*alignement[0]))
+			if word["word"]:
+				W=list(word["word"])
+				N=list(word["normalized"])
+				gapfunctionA=partial(gap_functionA,W,N)
+				gapfunctionB=partial(gap_functionB,W,N)
+				
+				alignement=align.globalcc(W,N,matchfunc,gapfunctionA,gapfunctionB,gap_char=['-'])
+				print("=")
+				for elem in alignement:
+					align1, align2, score, begin, end=elem
+					print(str(align1)+"\n"+str(align2)+"\n"+str(score))
 			
 			sentence=y["structs"]
 			
