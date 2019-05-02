@@ -31,7 +31,7 @@ paradigm=defaultdict(set)
 #def gapfunc(x,y):
 	
 
-def matchfunc(dial,stand):
+def matchfunc(stand,dial):
 	r1=stand.lower()
 	r2=dial.lower()
 	
@@ -46,23 +46,42 @@ def matchfunc(dial,stand):
 		for p in pairesproches:
 			if r1 in p and r2 in p:
 				return 7
-		elif:
-			r1 == "n" and r2 in ["m","v","j","n","k","p","s"]:
-				return 5
 		else:
-			return -10
+			if r1 == "n" and r2 in consonnes:
+				return 2
+			else:
+				return -10
 
 #matchfunc=functools.partial(matchfunction,"","","")
 
 def gap_functionA(word, normalized,x,y):
 	#print(word, normalized, x,y)
 	#print(word[x:],normalized[x:])
+	
+	if 3 < x < len(normalized)  and normalized[x-2] == normalized[x] and normalized[x-1] in ["h","l"]:
+		return -10-(y-1) if y > 1 else -2
+	
+	if x < len(normalized) and normalized[x-1]=="i" and normalized[x]=="j":
+		if y > 1:
+			return -10-(y-1)
+		else:
+			return -2
+	
+	if x < len(word) and word[x] == word[x-1]:
+		if y > 1:
+			return -10-(y-1)
+		else:
+			return -1
+	
 	return (-10 + -1*y)
 
 def gap_functionB(word, normalized,x,y):
 	#print(word, normalized, x,y)
 	if x < len(word) and word[x] == word[x-1]:
-		return -0.5*y
+		if y > 1:
+			return -5-0.5*(y-1)
+		else:
+			return -1
 	else:
 		return (-5-0.5*y)
 
@@ -134,7 +153,7 @@ if __name__=="__main__":
 				print("=")
 				for elem in alignement:
 					align1, align2, score, begin, end=elem
-					print(str(align1)+"\n"+str(align2)+"\n"+str(score))
+					print("".join(align1)+"\n"+"".join(align2)+"\n"+str(score))
 			
 			sentence=y["structs"]
 			
