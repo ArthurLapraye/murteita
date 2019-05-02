@@ -143,7 +143,7 @@ if __name__=="__main__":
 		for x,y in enumerate(SKN["kwic"]):
 			word=y["tokens"][0]
 			
-			if word["word"]:
+			if word["word"] and word["word"] != word["normalized"]:
 				W=list(word["word"])
 				N=list(word["normalized"])
 				gapfunctionA=partial(gap_functionA,W,N)
