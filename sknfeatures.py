@@ -38,10 +38,10 @@ def matchfunc(stand,dial):
 	
 	spaces=(" ","-")
 	
-	pairesproches=[("t","d"),("d","r"),("ä","e"),("ö","ä"),("o","a"),("o","u"),("i","j"),("t","s"),("ð","d"),("i","e")]
+	pairesproches=[("t","d"),("d","r"),("ä","e"),("ö","ä"),("ö","y"),("o","a"),("o","u"),("i","j"),("t","s"),("ð","d"),("i","e")]
 	
 	if r1==r2:
-		return 10
+		return 20
 	else:
 		for p in pairesproches:
 			if r1 in p and r2 in p:
@@ -58,7 +58,7 @@ def gap_functionA(word, normalized,x,y):
 	#print(word, normalized, x,y)
 	#print(word[x:],normalized[x:])
 	
-	if 3 < x < len(normalized)  and normalized[x-2] == normalized[x] and normalized[x-1] in ["h","l"]:
+	if 3 < x < len(normalized)  and normalized[x-2] == normalized[x] and normalized[x-1] in ["h","l"] and normalized[x] in voyelles:
 		return -10-(y-1) if y > 1 else -2
 	
 	if x < len(normalized) and normalized[x-1]=="i" and normalized[x]=="j":
@@ -79,11 +79,11 @@ def gap_functionB(word, normalized,x,y):
 	#print(word, normalized, x,y)
 	if x < len(word) and word[x] == word[x-1]:
 		if y > 1:
-			return -5-0.5*(y-1)
+			return -7-(0.7*(y-1))
 		else:
 			return -1
 	else:
-		return (-5-0.5*y)
+		return (-7-(0.7*y))
 
 if __name__=="__main__":
 	#SKN=load_skn(sys.argv[1])
