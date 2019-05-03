@@ -157,19 +157,14 @@ if __name__=="__main__":
 			word=y["tokens"][0]
 			
 			if word["word"] and word["word"] != word["normalized"]:
-				for elem in word["normalized"]:
-					elem=elem.lower()
-					if elem not in voyelles:
-						if elem not in consonnes:
-							if elem not in punctuation:
-								logging.error("non classé : "+elem)
+				
 				W=list(word["word"])
 				N=list(word["normalized"])
 				gapfunctionA=partial(gap_functionA,W,N)
 				gapfunctionB=partial(gap_functionB,W,N)
 				
-				alignement=align.globalcc(W,N,matchfunc,gapfunctionA,gapfunctionB,gap_char=['-'])
-				print("=")
+				alignement=align.globalcc(W,N,matchfunc,gapfunctionA,gapfunctionB,gap_char=['-'],one_alignment_only=True)
+				#print("=")
 				for elem in alignement:
 					align1, align2, score, begin, end=elem
 					print("".join(align1)+"\n"+"".join(align2)+"\n"+str(score))
@@ -221,6 +216,9 @@ if __name__=="__main__":
 				msd=dict([tuple(x.split("_",1)) for x in word["msd"].split("|")])
 				
 				if msd.get("SUBCAT",None) == "Interr":
+					sinter=True
+				
+				if msd.get("CLIT",None) and msd.get("CLIT",None).startswith("Qst"):
 					sinter=True
 			
 			if "subj" in word["deprel"]:
