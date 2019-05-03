@@ -14,8 +14,9 @@ from sknCONLL import load_skn
 alphabet={'ᴱ', 'h', '’', 'ᴉ', 'ϑ', 'Ä', 'c', 'ᵏ', 'J', '˘', 'ˉ', 'E', 'B', 'a', 'ᵉ', '₍', '0', 'Ǹ', 'ŧ', '”', '“', '1', '»', 'ᵃ', 'ĕ', 'u', 'i', '%', 'q', '̬', 'd', 'ò', 'ê', 'P', '‿', 'R', 'ᶠ', 'ʸ', '"', 'ᴋ', 'Z', '–', 'ᵑ', 'Y', 'ʷ', '?', 'M', ' ', 'û', '͔', 'ẅ', 'ʜ', '̮', ']', 'ʲ', 'ŏ', 'Ŏ', '^', 'ᴹ', 'Ì', '\uf21d', ')', 'á', '̳', 'ẁ', '\u0ff1', 'w', '+', 'ᴍ', 'Ĺ', 'å', 'ᴡ', 'χ', 'A', ',', '.', 'é', '*', '§', 'ŕ', 'N', '_', 'I', 'ŋ', 'b', 'ᵐ', 'ỳ', 'e', 'ŷ', 'k', 'ɦ', 'p', 'Ŭ', 'ə', 'ʟ', '[', 'ɢ', 'V', 'H', 'r', '°', 'W', 'ä', '̇', 'ḙ', 'ᴰ', 'ɪ', '̰', 'ʏ', 'ð', '\u1cff', 'ᴅ', 'ᴇ', '̹', 'ᵗ', 'ȯ', 'ì', '̲', 'ʀ', 'ᴺ', 'C', 's', 'U', 'ḭ', 'ᴵ', 'ᴠ', 'ɔ', 'ʾ', 'ʼ', 'ᴬ', 'y', 'ᴜ', '͇', 'Ń', 'ᵎ', 'ʙ', 'ᵻ', 'ö', '!', '5', '́', 'è', 'f', 'î', 'И', 't', '̀', 'Ö', 'ù', 'ị', '̄', '=', 'ṋ', '∼', 'β', 'δ', '-', 'à', 'D', 'ᴼ', 'Ȯ', 'Î', 'ʳ', 'v', 'ĺ', '(', 'ⁱ', 'ᴛ', 'ė', '~', '̥', 'ᵒ', '̭', 'ᵛ', 'ᵊ', 'ᵁ', '̆', 'È', 'ⁿ', '̜', 'ˈ', 'ú', 'ʰ', 'Å', '̤', 'ᴊ', '\xa0', '̈', 'ʿ', 'ś', 'n', 'ń', 'ḱ', 'ɐ', 'Ò', 'F', 'ǹ', 'ˢ', 'í', 'š', 'ǰ', '̗', 'ᵘ', 'O', 'ŭ', 'ᴮ', 'T', 'ᴏ', 'o', 'ĭ', 'ḛ', 'ˡ', 'ó', 'ᴶ', 'À', '\u0fff', 'ᴎ', 'l', 'z', "'", 'g', 'ₒ', '#', 'j', 'ṵ', 'ô', '<', 'm', 'L', '´', 'K', '`', 'ɴ', 'G', '̂', '͕', 'ɛ', 'ˀ', 'S', 'ᵖ', 'â', '3', 'ă', 'ᴀ'}
 
 
-consonnes= "ztpqdfghjklmnbvcx"
-voyelles="aeiouyäö"
+consonnes= "zδtpqdfghjklmnbvcxðsrvŋw"
+voyelles="aeiouyäöəɛᴏ"
+punctuation=" &~#\"'({[-|`_\^@)]°=+}$^¨%µ*!:;,?./§1234567890"
 
 same=[("à","a")]
 
@@ -35,10 +36,18 @@ def matchfunc(stand,dial):
 	r1=stand.lower()
 	r2=dial.lower()
 	
+	if "ᴏ" == r1:
+		r1="o"
+	elif "ᴏ"== r2:
+		r2 = "o"
+	elif "δ"==r1:
+		r1="ð"
+	elif r2=="δ":
+		r2="ð"
 	
 	spaces=(" ","-")
 	
-	pairesproches=[("t","d"),("d","r"),("ä","e"),("ö","ä"),("ö","y"),("o","a"),("o","u"),("i","j"),("t","s"),("ð","d"),("i","e")]
+	pairesproches=[("t","d"),("d","r"),("ä","e"),("ö","ä"),("ö","y"),("o","a"),("o","u"),("i","j"),("t","s"),("ð","d"),("i","e"),("ə","i"),("ə","e"),("d","r")]
 	
 	if r1==r2:
 		return 20
@@ -51,39 +60,43 @@ def matchfunc(stand,dial):
 				return 2
 			else:
 				return -10
+	
+	return -100
 
 #matchfunc=functools.partial(matchfunction,"","","")
 
 def gap_functionA(word, normalized,x,y):
-	#print(word, normalized, x,y)
+	#print("A",word, normalized, x,y)
 	#print(word[x:],normalized[x:])
 	
 	if 3 < x < len(normalized)  and normalized[x-2] == normalized[x] and normalized[x-1] in ["h","l"] and normalized[x] in voyelles:
-		return -10-(y-1) if y > 1 else -2
+		return -10-(y-1) if y > 1 else -1
 	
 	if x < len(normalized) and normalized[x-1]=="i" and normalized[x]=="j":
 		if y > 1:
 			return -10-(y-1)
 		else:
-			return -2
-	
-	if x < len(word) and word[x] == word[x-1]:
-		if y > 1:
-			return -10-(y-1)
-		else:
 			return -1
+	
+	if x > 2:
+		if x < len(normalized) and normalized[x] == normalized[x-1]:
+			if y > 1:
+				return -10-(y-1)
+			else:
+				return -1
 	
 	return (-10 + -1*y)
 
 def gap_functionB(word, normalized,x,y):
-	#print(word, normalized, x,y)
-	if x < len(word) and word[x] == word[x-1]:
-		if y > 1:
-			return -7-(0.7*(y-1))
-		else:
-			return -1
-	else:
-		return (-7-(0.7*y))
+	#print("B",word, normalized, x,y)
+	if x > 2:
+		if x < len(normalized) and normalized[x] == normalized[x-1]:
+			if y > 1:
+				return -7-(0.7*(y-1))
+			else:
+				return -1
+	
+	return (-7-(0.7*y))
 
 if __name__=="__main__":
 	#SKN=load_skn(sys.argv[1])
@@ -144,6 +157,12 @@ if __name__=="__main__":
 			word=y["tokens"][0]
 			
 			if word["word"] and word["word"] != word["normalized"]:
+				for elem in word["normalized"]:
+					elem=elem.lower()
+					if elem not in voyelles:
+						if elem not in consonnes:
+							if elem not in punctuation:
+								logging.error("non classé : "+elem)
 				W=list(word["word"])
 				N=list(word["normalized"])
 				gapfunctionA=partial(gap_functionA,W,N)
