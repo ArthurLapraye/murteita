@@ -160,14 +160,15 @@ if __name__=="__main__":
 				
 				W=list(word["word"])
 				N=list(word["normalized"])
-				gapfunctionA=partial(gap_functionA,W,N)
-				gapfunctionB=partial(gap_functionB,W,N)
-				
-				alignement=align.globalcc(W,N,matchfunc,gapfunctionA,gapfunctionB,gap_char=['-'],one_alignment_only=True)
+				if False:
+					gapfunctionA=partial(gap_functionA,W,N)
+					gapfunctionB=partial(gap_functionB,W,N)
+					
+					alignement=align.globalcc(W,N,matchfunc,gapfunctionA,gapfunctionB,gap_char=['-'],one_alignment_only=True)
 				#print("=")
-				for elem in alignement:
-					align1, align2, score, begin, end=elem
-					print("".join(align1)+"\n"+"".join(align2)+"\n"+str(score))
+					for elem in alignement:
+						align1, align2, score, begin, end=elem
+						print("".join(align1)+"\n"+"".join(align2)+"\n"+str(score))
 			
 			sentence=y["structs"]
 			
@@ -223,16 +224,16 @@ if __name__=="__main__":
 			
 			if "subj" in word["deprel"]:
 				VSsentence=(int(word["id"]) > int(word["dephead"] ))
-				if "S" not in alignment:
-					alignment+="S"
+				alignment+="S"
 			
-			if word["pos"]="V" and word["dephead"]==0:
-				if "V" not in alignment:
-					alignment += "V"
+			if "ROOT" == word["deprel"]:
+				alignment += "V"
 			
-			if "dobj" in word["deprel"]:
-				if "O" not in alignment:
-					alignment+="O"
+			if "obj" in word["deprel"]:
+				alignment+="O"
+			
+			if word["pos"]=="C":
+				alignment+="_"
 				
 			
 			
@@ -250,7 +251,7 @@ if __name__=="__main__":
 				word_e=0
 				slength=0
 				
-				alignment="_"
+				alignment=""
 				VSsentence = False
 				sinter=False
 
