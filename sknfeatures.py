@@ -142,7 +142,7 @@ if __name__=="__main__":
 	word_t=0
 	word_e=0
 	
-	alignment="_"
+	alignment=""
 	VSsentence = False
 	sinter=False
 
@@ -223,7 +223,16 @@ if __name__=="__main__":
 			
 			if "subj" in word["deprel"]:
 				VSsentence=(int(word["id"]) > int(word["dephead"] ))
-					
+				if "S" not in alignment:
+					alignment+="S"
+			
+			if word["pos"]="V" and word["dephead"]==0:
+				if "V" not in alignment:
+					alignment += "V"
+			
+			if "dobj" in word["deprel"]:
+				if "O" not in alignment:
+					alignment+="O"
 				
 			
 			
