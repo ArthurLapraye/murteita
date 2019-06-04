@@ -172,6 +172,25 @@ if __name__=="__main__":
 			
 			sentence=y["structs"]
 			
+			if sentence_id != sentence['sentence_origid']:
+				fileoutput+="\n"+"\t".join(map(str,[sentence_id,slength,tassimil,nassimil,mpassimil,nn,eassimil,oassimil,word_t,word_n,word_e,str(VSsentence).upper(),alignment,str(sinter).upper()]))
+				sentence_id=sentence['sentence_origid']
+				tassimil=0
+				oassimil=0
+				nassimil=0
+				eassimil=0
+				mpassimil=0
+				nn=0
+				word_n=0
+				word_t=0
+				word_e=0
+				slength=0
+				
+				alignment=""
+				VSsentence = False
+				sinter=False
+				print("=+=EOS=+=")
+			
 			slength+=1
 			
 			try:
@@ -223,6 +242,7 @@ if __name__=="__main__":
 					sinter=True
 			
 			if "subj" in word["deprel"]:
+				print("SUBJ=",word["word"])
 				VSsentence=(int(word["id"]) > int(word["dephead"] ))
 				alignment+="S"
 			
@@ -234,30 +254,11 @@ if __name__=="__main__":
 			
 			if word["pos"]=="C":
 				alignment+="_"
-				
 			
-			
-			if sentence_id != sentence['sentence_origid']:
-				fileoutput+="\n"+"\t".join(map(str,[sentence_id,slength,tassimil,nassimil,mpassimil,nn,eassimil,oassimil,word_t,word_n,word_e,str(VSsentence).upper(),alignment,str(sinter).upper()]))
-				sentence_id=sentence['sentence_origid']
-				tassimil=0
-				oassimil=0
-				nassimil=0
-				eassimil=0
-				mpassimil=0
-				nn=0
-				word_n=0
-				word_t=0
-				word_e=0
-				slength=0
-				
-				alignment=""
-				VSsentence = False
-				sinter=False
-
 			
 			if title != sentence['text_title']:
 				if title:
+					print("title "+ title)
 					with open(outfolder+title+".csv","w") as out:
 						out.write(fileoutput)
 				fileoutput="\t".join(HEADERS)
