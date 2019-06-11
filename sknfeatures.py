@@ -27,6 +27,10 @@ DEBUGSAMPLE=1
 #Utiliser functools.partial pour avoir accès au mot d'avant et au mot d'après 
 #prototype futur = matchfunction (mot, motprecedent,motsuivant,r1,r2) => partial =>matchfunc
 
+def makemsdic(word):
+	morphofeats=word["msd"]
+	
+	return  dict([tuple(x.split("_",1)) for x in morphofeats.split("|")])
 	
 
 def matchfunc(stand,dial):
@@ -108,32 +112,53 @@ def alignage(w,n):
 def traitsphonos(word, tabl,tableauindex):
 	assimilation=False
 	
-	if word["word"][-1]=="n":
+	nextcons=nextword["normalized"][0]
+	lastcons=word["word"][-1]
+	asscons=word["normalized"][-1]
+	
+	if lastcons=="n":
 		tabl.loc[tableauindex,"word_n"]+=1
-		if (word["normalized"][-1]==nextword["normalized"][0] ) and word["normalized"][-1] != "n":
+		if (asscons==nextcons ) and asscons != "n":
 			tabl.loc[tableauindex,"n_ass"]+=1
 			assimilation=True
-		elif word["normalized"][-1]=="m" and nextword["normalized"][0] == "p":
+		elif asscons=="m" and nextcons == "p":
 			tabl.loc[tableauindex,"mp_ass"]+=1
 			assimilation=True
-		elif nextword["normalized"][-1] == "n":
+		elif nextcons == "n":
 			tabl.loc[tableauindex,"n_n"] += 1
 			assimilation=True
 		
 		
-	elif word["word"][-1]=="t":
+	elif lastcons=="t":
 		tabl.loc[tableauindex,"word_t"]+=1
-		if  (word["normalized"][-1]==nextword["normalized"][0] ) and word["normalized"][-1] != "t":
+		if  (asscons==nextcons ) and asscons != "t":
 			tabl.loc[tableauindex,"t_ass"]+=1
 			assimilation=True
 		
-	elif word["word"][-1]=="e":
-		tabl.loc[tableauindex,"word_e"]+=1
-		if  (word["normalized"][-1]==nextword["normalized"][0] ) and word["normalized"][-1] != "e":
-			tabl.loc[tableauindex,"e_ass"]+=1
+	elif lastcons=="e":
+		tabl.loc[tableauindex,"word_glott"]+=1
+		if  (asscons==nextcons ) and asscons != "e":
+			tabl.loc[tableauindex,"glott_ass"]+=1
 			assimilation=True
 	
-	elif (word["normalized"][-1]==nextword["normalized"][0] ) and word["word"][-1]!=word["normalized"][-1]:
+	elif word["pos"]== "V":
+		vmsd=makemsdic(word)
+		
+		if vmsd.get("INF",None):
+			if vmsd["INF"]=="Inf1":
+				tabl.loc[tableauindex,"word_glott"]+=1
+				if asscons == nextcons:
+					tabl.loc[tableauindex, "glott_ass"] += 1
+					assimilation=True
+		
+		if vmsd.get("MOOD",None):
+			if vmsd["MOOD"]=="Imprt":
+				tabl.loc[tableauindex,"word_glott"]+=1
+				if	asscons == nextcons:
+					tabl.loc[tableauindex, "glott_ass"] += 1
+					assimilation=True
+	
+	elif (asscons==nextcons ) and lastcons !=asscons:
 		tabl.loc[tableauindex,"otherass"]+=1
 		assimilation=True
 	
@@ -152,7 +177,7 @@ def synstruc(syntacdic,tableau,tableauindex):
 	for elem in syntacdic:
 		for e in syntacdic:
 			if syntacdic[e]["dephead"] == elem:
-				msd=dict([tuple(x.split("_",1)) for x in syntacdic[e]["msd"].split("|")])
+				msd=makemsdic(syntacdic[e])
 				
 				if not (DEBUGSAMPLE % 101):
 					print("\t",syntacdic[e]["normalized"],e,syntacdic[e]["deprel"],"child of",elem,syntacdic[elem]["normalized"])
@@ -210,7 +235,7 @@ if __name__=="__main__":
 	title=None
 	assdict=defaultdict(str)
 	
-	HEADERS=["id","longueur","t_ass","n_ass","mp_ass","n_n","e_ass","otherass","word_t","word_n","word_e","interrog","props","vs","sv","os","so","vo","ov","svo","sov","ovs","osv","vso","vos","sv"]
+	HEADERS=["id","longueur","t_ass","n_ass","mp_ass","n_n","glott_ass","otherass","word_t","word_n","word_glott","interrog","props","vs","sv","os","so","vo","ov","svo","sov","ovs","osv","vso","vos","sv"]
 	NONNUMHEADERS=["id"]
 	headershelp="""id : id de la phrase
 				  longueur : longueur en mot de la phrase
@@ -218,11 +243,11 @@ if __name__=="__main__":
 				  n_ass nombre de n en fin de mot assimilés totalement
 				  mp_ass nombre de n assmilés à m devant p 
 				  n_n nombre de n en fin de mot suivi de n initial
-				 e_ass nombre de mot finissant en -e dans le standard et ayant leur glottale assimilée
+				 glott_ass nombre de mot finissant en occlusive glottale dans le standard et ayant leur glottale assimilée
 				 o_ass autres assimilations de sandhi
 				 word_t mots finissants en t
 				 word_n
-				 word_e
+				 word_glott
 				 
 				 props : nombre de propositions
 				 svo, osv, etc : nombre de propositions utilisant l'ordre svo, osv, etc
@@ -266,6 +291,7 @@ if __name__=="__main__":
 					#print(tableau)
 					#input()
 					#with open(,"w") as out:
+					
 					try:
 						tableau.to_csv(outfolder+title+"-v2.csv", sep='\t', encoding='utf-8')
 					except Exception as e:
