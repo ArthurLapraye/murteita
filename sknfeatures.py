@@ -105,7 +105,8 @@ def alignage(w,n):
 	phonalignement=align.globalcc(Word,Normalized,matchfunc,gapfunctionA,gapfunctionB,gap_char=['-'],one_alignment_only=True)
 	for elem in phonalignement:
 		align1, align2, score, begin, end=elem
-		#print("".join(align1)+"\n"+"".join(align2)+"\n"+str(score))
+		if not (DEBUGSAMPLE % 101) :
+			print("".join(align1)+"\n"+"".join(align2)+"\n"+str(score))
 		
 	return phonalignement
 
@@ -265,7 +266,7 @@ if __name__=="__main__":
 		for x,y in enumerate(SKN["kwic"]):
 			word=y["tokens"][0]
 			
-			if False and word["word"] and word["word"] != word["normalized"]:
+			if word["word"] and word["word"] != word["normalized"]:
 				alignage(word["word"],word["normalized"])
 			
 			sentence=y["structs"]
