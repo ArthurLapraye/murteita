@@ -23,6 +23,7 @@ punctuation=" &~#\"'({[-|`_\^@)]°=+}$^¨%µ*!:;,?./§1234567890"
 same=[("à","a")]
 
 NORMALFLAG=True
+DEBUGOUTPUT=False
 DEBUGSAMPLE=1
 #Utiliser functools.partial pour avoir accès au mot d'avant et au mot d'après 
 #prototype futur = matchfunction (mot, motprecedent,motsuivant,r1,r2) => partial =>matchfunc
@@ -32,6 +33,7 @@ def makemsdic(word):
 	
 	return  dict([tuple(x.split("_",1)) for x in morphofeats.split("|")])
 	
+pairesproches=set((("t","d"),("d","r"),("ä","e"),("ö","ä"),("ö","y"),("o","a"),('ö','e'),("o","u"),("i","j"),("t","s"),("ð","d"),("i","e"),("ə","i"),("ə","e"),("d","r"),("d","w"),("d","j"),('y','w'),("ö","w")))
 
 def matchfunc(stand,dial):
 	r1=stand.lower()
@@ -48,8 +50,6 @@ def matchfunc(stand,dial):
 	
 	spaces=(" ","-")
 	
-	pairesproches=[("t","d"),("d","r"),("ä","e"),("ö","ä"),("ö","y"),("o","a"),("o","u"),("i","j"),("t","s"),("ð","d"),("i","e"),("ə","i"),("ə","e"),("d","r")]
-	
 	if r1==r2:
 		return 20
 	else:
@@ -59,15 +59,19 @@ def matchfunc(stand,dial):
 		else:
 			if r1 == "n" and r2 in consonnes:
 				return 2
+			elif r1 in "mn" and r2 in "mn":
+				return 1.5
+			
+			elif r1 in voyelles and r2 in voyelles:		
+				return 1
 			else:
-				return -10
-	
+				return -20
+		
 	return -100
 
 #matchfunc=functools.partial(matchfunction,"","","")
 
 def gap_functionA(word, normalized,x,y):
-	
 	if 3 < x < len(normalized)  and normalized[x-2] == normalized[x] and normalized[x-1] in ["h","l"] and normalized[x] in voyelles:
 		return -10-(y-1) if y > 1 else -1
 	
@@ -97,16 +101,15 @@ def gap_functionB(word, normalized,x,y):
 	return (-7-(0.7*y))
 
 def alignage(w,n):
-	Word=list(w)
-	Normalized=list(n)
+	#print(w,n)
+	Word=list(w.lower())
+	Normalized=list(n.lower())
 	gapfunctionA=partial(gap_functionA,Word,Normalized)
 	gapfunctionB=partial(gap_functionB,Word,Normalized)
-					
-	phonalignement=align.globalcc(Word,Normalized,matchfunc,gapfunctionA,gapfunctionB,gap_char=['-'],one_alignment_only=True)
-	for elem in phonalignement:
-		align1, align2, score, begin, end=elem
-		if not (DEBUGSAMPLE % 101) :
-			print("".join(align1)+"\n"+"".join(align2)+"\n"+str(score))
+		
+	phonalignement=align.globalcc(Word,Normalized,matchfunc,gapfunctionA,gapfunctionB,gap_char=['-'])
+	#for elem in phonalignement:
+	#	align1, align2, score, begin, end=elem
 		
 	return phonalignement
 
@@ -225,6 +228,8 @@ def synstruc(syntacdic,tableau,tableauindex):
 if __name__=="__main__":
 	#SKN=load_skn(sys.argv[1])
 	
+	
+	
 	b=0
 	beginning=0
 	end=860000
@@ -258,6 +263,7 @@ if __name__=="__main__":
 	tableau=pd.DataFrame()
 	
 	syntacdict=dict()
+	phonocorr=defaultdict(float)
 	
 	for rank in range(beginning,end,10000):
 		if rank == 0:
@@ -268,12 +274,21 @@ if __name__=="__main__":
 			word=y["tokens"][0]
 			
 			if word["word"] and word["word"] != word["normalized"]:
-				alignage(word["word"],word["normalized"])
+				alignement=alignage(word["word"],word["normalized"])
+				if alignement:
+					
+					align1, align2,align3,align4,align5 = alignement[0]
+					for orig,dialect in zip(align1, align2):
+						if orig != dialect:
+							phonocorr[orig+"+"+dialect]+=1
+				else:
+					logging.error("Problème d'alignement pour la paire "+word["word"]+" "+word["normalized"]) 
 			
 			sentence=y["structs"]
 			
 			if sentence_id != sentence['sentence_origid']:
-				DEBUGSAMPLE+=1
+				if DEBUGOUTPUT:
+					DEBUGSAMPLE+=1
 				
 				if sentence_id:
 					synstruc(syntacdict,tableau,tableauindex)
@@ -335,6 +350,10 @@ if __name__=="__main__":
 			
 			syntacdict[word["id"]]=word
 			
-			
-			
+	
+	for elem in sorted(phonocorr,key=lambda x : phonocorr[x],reverse=False):
+		print(elem,":",phonocorr[elem])
+	
+	
+	sys.exit(0)		
 
