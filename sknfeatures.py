@@ -216,7 +216,8 @@ def synstruc(syntacdic,tableau,tableauindex):
 				
 				
 	if not (DEBUGSAMPLE % 101) :
-		input()
+		if False:
+			input()
 	
 	return 0
 
@@ -272,7 +273,7 @@ if __name__=="__main__":
 			sentence=y["structs"]
 			
 			if sentence_id != sentence['sentence_origid']:
-				#DEBUGSAMPLE+=1
+				DEBUGSAMPLE+=1
 				
 				if sentence_id:
 					synstruc(syntacdict,tableau,tableauindex)
