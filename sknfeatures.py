@@ -4,9 +4,10 @@ import json
 #from Levenshtein import distance as lev
 import sys
 import logging
+import re
 from Bio.pairwise2 import format_alignment, align
 from functools import partial
-
+from random import randint
 from collections import defaultdict
 
 from sknCONLL import load_skn
@@ -25,8 +26,6 @@ same=[("à","a")]
 NORMALFLAG=True
 DEBUGOUTPUT=False
 DEBUGSAMPLE=1
-#Utiliser functools.partial pour avoir accès au mot d'avant et au mot d'après 
-#prototype futur = matchfunction (mot, motprecedent,motsuivant,r1,r2) => partial =>matchfunc
 
 def makemsdic(word):
 	morphofeats=word["msd"]
@@ -35,18 +34,22 @@ def makemsdic(word):
 	
 pairesproches=set((("t","d"),("d","r"),("ä","e"),("ö","ä"),("ö","y"),("o","a"),('ö','e'),("o","u"),("i","j"),("t","s"),("ð","d"),("i","e"),("ə","i"),("ə","e"),("d","r"),("d","w"),("d","j"),('y','w'),("ö","w")))
 
+re1=re.compile("ᴏ")
+re2=re.compile("δ")
+
+def betternorm(s):
+	try:
+		z=re2.sub("ð",re1.sub("o",s))
+	except TypeError as e:
+		logging.error(e,"at",s)
+		return None
+		
+	return z
+	
+
 def matchfunc(stand,dial):
 	r1=stand.lower()
 	r2=dial.lower()
-	
-	if "ᴏ" == r1:
-		r1="o"
-	elif "ᴏ"== r2:
-		r2 = "o"
-	elif "δ"==r1:
-		r1="ð"
-	elif r2=="δ":
-		r2="ð"
 	
 	spaces=(" ","-")
 	
@@ -57,9 +60,9 @@ def matchfunc(stand,dial):
 			if r1 in p and r2 in p:
 				return 7
 		else:
-			if r1 == "n" and r2 in consonnes:
+			if r1 in "mn" and r2 in "mn":
 				return 2
-			elif r1 in "mn" and r2 in "mn":
+			elif r1 == "n" and r2 in consonnes:
 				return 1.5
 			
 			elif r1 in voyelles and r2 in voyelles:		
@@ -77,14 +80,14 @@ def gap_functionA(word, normalized,x,y):
 	
 	if x < len(normalized) and normalized[x-1]=="i" and normalized[x]=="j":
 		if y > 1:
-			return -10-(y-1)
+			return -2-(y-1)
 		else:
 			return -1
 	
 	if x > 2:
 		if x < len(normalized) and normalized[x] == normalized[x-1]:
 			if y > 1:
-				return -10-(y-1)
+				return -2-(y-1)
 			else:
 				return -1
 	
@@ -94,11 +97,12 @@ def gap_functionB(word, normalized,x,y):
 	if x > 2:
 		if x < len(normalized) and normalized[x] == normalized[x-1]:
 			if y > 1:
-				return -7-(0.7*(y-1))
+				return -1.5-(0.15*(y-1))
 			else:
 				return -1
 	
-	return (-7-(0.7*y))
+	return (-1.5-(0.15*y))
+
 
 def alignage(w,n):
 	#print(w,n)
@@ -108,8 +112,12 @@ def alignage(w,n):
 	gapfunctionB=partial(gap_functionB,Word,Normalized)
 		
 	phonalignement=align.globalcc(Word,Normalized,matchfunc,gapfunctionA,gapfunctionB,gap_char=['-'])
-	#for elem in phonalignement:
-	#	align1, align2, score, begin, end=elem
+	
+	
+	if randint(0,101) > 99:
+		for elem in phonalignement:
+			align1, align2, score, begin, end=elem
+			print(str("".join(align1)+"\n"+"".join(align2)+"\t"+str(score)))
 		
 	return phonalignement
 
@@ -172,7 +180,7 @@ def traitsphonos(word, tabl,tableauindex):
 def synstruc(syntacdic,tableau,tableauindex):
 	tableau.loc[tableauindex, "props"] += 1
 	
-	if not (DEBUGSAMPLE % 101):
+	if False and not (DEBUGSAMPLE % 101):
 		print(' '.join([ syntacdic[x]["normalized"] for x in syntacdic]))
 		print(' '.join([ syntacdic[x]["word"] for x in syntacdic]))
 	
@@ -183,7 +191,7 @@ def synstruc(syntacdic,tableau,tableauindex):
 			if syntacdic[e]["dephead"] == elem:
 				msd=makemsdic(syntacdic[e])
 				
-				if not (DEBUGSAMPLE % 101):
+				if False and not (DEBUGSAMPLE % 101):
 					print("\t",syntacdic[e]["normalized"],e,syntacdic[e]["deprel"],"child of",elem,syntacdic[elem]["normalized"])
 				
 				if "subj" in syntacdic[e]["deprel"]:
@@ -242,10 +250,12 @@ if __name__=="__main__":
 	title=None
 	assdict=defaultdict(str)
 	
-	HEADERS=["id","longueur","t_ass","n_ass","mp_ass","n_n","glott_ass","otherass","word_t","word_n","word_glott","interrog","props","vs","sv","os","so","vo","ov","svo","sov","ovs","osv","vso","vos","sv"]
+	HEADERS=["id","longueur","longueurpho","t_ass","n_ass","mp_ass","n_n","glott_ass","otherass","word_t","word_n","word_glott","interrog","props","vs","sv","os","so","vo","ov","svo","sov","ovs","osv","vso","vos","sv",'ö+w', 'y+o', 'n+w', 'o+ə', 'a+ə', 'y+a', 'ä+o', 'y+e', 'ö+e', 'u+y', 'e+ᴏ', 'u+e', 'e+y', 'i+ö', 'm+n', 'u+i', 'o+ö', 'o+e', 'a+ᴏ', 'y+i', 'ä+y', 'ö+y', 'ä+ə', 'u+ö', 'ö+o', 'ä+ö', 'y+u', 'i+ə', 'i+y', 'n+g', 'e+u', 'o+ᴏ', 'i+u', 'd+δ', 'd+w', 'o+i', 'n+p', 'y+ö', 'i+j', 'y+ä', 'a+ä', 'd+t', 'e+ə', 'i+o', 't+d', 'ö+ä', 'u+a', 'e+a', 'j+i', 'n+k', 'i+ä', 'o+u', 'a+e', 'n+s', 'n+r', 'd+j', 'a+u', 'n+t']
+
 	NONNUMHEADERS=["id"]
 	headershelp="""id : id de la phrase
 				  longueur : longueur en mot de la phrase
+				  longueurpho : nombre de phonèmes de la phrase
 				  t_ass nombre de t en fin de mot assimilés totalement
 				  n_ass nombre de n en fin de mot assimilés totalement
 				  mp_ass nombre de n assmilés à m devant p 
@@ -272,6 +282,8 @@ if __name__=="__main__":
 		b=rank
 		for x,y in enumerate(SKN["kwic"]):
 			word=y["tokens"][0]
+			word["word"]=betternorm(word["word"])
+			word["normalized"]=betternorm(word["normalized"])
 			
 			if word["word"] and word["word"] != word["normalized"]:
 				alignement=alignage(word["word"],word["normalized"])
@@ -280,7 +292,11 @@ if __name__=="__main__":
 					align1, align2,align3,align4,align5 = alignement[0]
 					for orig,dialect in zip(align1, align2):
 						if orig != dialect:
-							phonocorr[orig+"+"+dialect]+=1
+							featname=orig+"+"+dialect
+							phonocorr[featname]+=1
+							if featname in HEADERS:
+								tableau.loc[tableauindex, featname] += 1
+							
 				else:
 					logging.error("Problème d'alignement pour la paire "+word["word"]+" "+word["normalized"]) 
 			
@@ -291,6 +307,7 @@ if __name__=="__main__":
 					DEBUGSAMPLE+=1
 				
 				if sentence_id:
+					tableau.loc[tableauindex, "longueurpho"] = len("".join([ syntacdict[x]["normalized"] for x in syntacdict]))
 					synstruc(syntacdict,tableau,tableauindex)
 					#print(tableau.iloc[-1:])
 					tableauindex+=1
