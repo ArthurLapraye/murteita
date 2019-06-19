@@ -32,7 +32,7 @@ def makemsdic(word):
 	
 	return  dict([tuple(x.split("_",1)) for x in morphofeats.split("|")])
 	
-pairesproches=set((("t","d"),("d","r"),("ä","e"),("ö","ä"),("ö","y"),("o","a"),('ö','e'),("o","u"),("i","j"),("t","s"),("ð","d"),("i","e"),("ə","i"),("ə","e"),("d","r"),("d","w"),("d","j"),('y','w'),("ö","w")))
+pairesproches=set((("t","d"),("d","r"),("ä","e"),("ö","ä"),("ö","y"),("o","a"),('ö','e'),("o","u"),("i","j"),("t","s"),("ð","d"),("i","e"),("ə","i"),("ə","e"),("d","r"),("d","w"),("d","j"),('y','w'),("ö","w"),("v","f"),("t","m"),("m","p") ))
 
 re1=re.compile("ᴏ")
 re2=re.compile("δ")
@@ -114,7 +114,7 @@ def alignage(w,n):
 	phonalignement=align.globalcc(Word,Normalized,matchfunc,gapfunctionA,gapfunctionB,gap_char=['-'])
 	
 	
-	if randint(0,101) > 99:
+	if randint(0,1001) > 999:
 		for elem in phonalignement:
 			align1, align2, score, begin, end=elem
 			print(str("".join(align1)+"\n"+"".join(align2)+"\t"+str(score)))
@@ -250,7 +250,7 @@ if __name__=="__main__":
 	title=None
 	assdict=defaultdict(str)
 	
-	HEADERS=["id","longueur","longueurpho","t_ass","n_ass","mp_ass","n_n","glott_ass","otherass","word_t","word_n","word_glott","interrog","props","vs","sv","os","so","vo","ov","svo","sov","ovs","osv","vso","vos","sv",'ö+w', 'y+o', 'n+w', 'o+ə', 'a+ə', 'y+a', 'ä+o', 'y+e', 'ö+e', 'u+y', 'e+ᴏ', 'u+e', 'e+y', 'i+ö', 'm+n', 'u+i', 'o+ö', 'o+e', 'a+ᴏ', 'y+i', 'ä+y', 'ö+y', 'ä+ə', 'u+ö', 'ö+o', 'ä+ö', 'y+u', 'i+ə', 'i+y', 'n+g', 'e+u', 'o+ᴏ', 'i+u', 'd+δ', 'd+w', 'o+i', 'n+p', 'y+ö', 'i+j', 'y+ä', 'a+ä', 'd+t', 'e+ə', 'i+o', 't+d', 'ö+ä', 'u+a', 'e+a', 'j+i', 'n+k', 'i+ä', 'o+u', 'a+e', 'n+s', 'n+r', 'd+j', 'a+u', 'n+t']
+	HEADERS=["id","longueur","longueurpho","t_ass","n_ass","mp_ass","n_n","glott_ass","otherass","word_t","word_n","word_glott","interrog","props","vs","sv","os","so","vo","ov","svo","sov","ovs","osv","vso","vos","sv"]+list(map(lambda x : "var_"+ x, ['ö+w', 'y+o', 'n+w', 'o+ə', 'a+ə', 'y+a', 'ä+o', 'y+e', 'ö+e', 'u+y', 'e+ᴏ', 'u+e', 'e+y', 'i+ö', 'm+n', 'u+i', 'o+ö', 'o+e', 'a+ᴏ', 'y+i', 'ä+y', 'ö+y', 'ä+ə', 'u+ö', 'ö+o', 'ä+ö', 'y+u', 'i+ə', 'i+y', 'n+g', 'e+u', 'o+ᴏ', 'i+u', 'd+δ', 'd+w', 'o+i', 'n+p', 'y+ö', 'i+j', 'y+ä', 'a+ä', 'd+t', 'e+ə', 'i+o', 't+d', 'ö+ä', 'u+a', 'e+a', 'j+i', 'n+k', 'i+ä', 'o+u', 'a+e', 'n+s', 'n+r', 'd+j', 'a+u', 'n+t']))
 
 	NONNUMHEADERS=["id"]
 	headershelp="""id : id de la phrase
@@ -292,7 +292,7 @@ if __name__=="__main__":
 					align1, align2,align3,align4,align5 = alignement[0]
 					for orig,dialect in zip(align1, align2):
 						if orig != dialect:
-							featname=orig+"+"+dialect
+							featname="var_"+orig+"+"+dialect
 							phonocorr[featname]+=1
 							if featname in HEADERS:
 								tableau.loc[tableauindex, featname] += 1
@@ -327,7 +327,7 @@ if __name__=="__main__":
 					#with open(,"w") as out:
 					
 					try:
-						tableau.to_csv(outfolder+title+"-v2.csv", sep='\t', encoding='utf-8')
+						tableau.to_csv(outfolder+title+"-v2.csv", sep='\t', encoding='utf-8',index=False)
 					except Exception as e:
 						print(e)
 						pass
