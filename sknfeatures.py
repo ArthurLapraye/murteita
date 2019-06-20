@@ -32,7 +32,7 @@ def makemsdic(word):
 	
 	return  dict([tuple(x.split("_",1)) for x in morphofeats.split("|")])
 	
-pairesproches=set((("t","d"),("d","r"),("ä","e"),("ö","ä"),("ö","y"),("o","a"),('ö','e'),("o","u"),("i","j"),("t","s"),("ð","d"),("i","e"),("ə","i"),("ə","e"),("d","r"),("d","w"),("d","j"),('y','w'),("ö","w"),("v","f"),("t","m"),("m","p") ))
+pairesproches=set((("t","d"),("d","r"),("ä","e"),("ö","ä"),("ö","y"),("o","a"),('ö','e'),("o","u"),("i","j"),("t","s"),("ð","d"),("i","e"),("ə","i"),("ə","e"),("d","r"),("d","w"),("d","j"),('y','w'),("ö","w"),("v","f"),("t","m"),("m","p"), ("u","w")))
 
 re1=re.compile("ᴏ")
 re2=re.compile("δ")
@@ -281,44 +281,8 @@ if __name__=="__main__":
 		SKN=load_skn("skn_corpus_%s-%s.json" % (b,rank))
 		b=rank
 		for x,y in enumerate(SKN["kwic"]):
-			word=y["tokens"][0]
-			word["word"]=betternorm(word["word"])
-			word["normalized"]=betternorm(word["normalized"])
+			sentence=y["structs"] 
 			
-			if word["word"] and word["word"] != word["normalized"]:
-				alignement=alignage(word["word"],word["normalized"])
-				if alignement:
-					
-					align1, align2,align3,align4,align5 = alignement[0]
-					for orig,dialect in zip(align1, align2):
-						if orig != dialect:
-							featname="var_"+orig+"+"+dialect
-							phonocorr[featname]+=1
-							if featname in HEADERS:
-								tableau.loc[tableauindex, featname] += 1
-							
-				else:
-					logging.error("Problème d'alignement pour la paire "+word["word"]+" "+word["normalized"]) 
-			
-			sentence=y["structs"]
-			
-			if sentence_id != sentence['sentence_origid']:
-				if DEBUGOUTPUT:
-					DEBUGSAMPLE+=1
-				
-				if sentence_id:
-					tableau.loc[tableauindex, "longueurpho"] = len("".join([ syntacdict[x]["normalized"] for x in syntacdict]))
-					synstruc(syntacdict,tableau,tableauindex)
-					#print(tableau.iloc[-1:])
-					tableauindex+=1
-					sentence_id= sentence['sentence_origid']
-					for elem in HEADERS:
-						tableau.loc[tableauindex,elem] = sentence_id if elem == "id" else 0
-					syntacdict=dict()
-			
-				else:
-					sentence_id= sentence['sentence_origid']	
-				
 			if title != sentence['text_title']:
 				if title:
 					
@@ -338,7 +302,45 @@ if __name__=="__main__":
 				
 				tableau=pd.DataFrame(dict( ( (x,[sentence_id]) if x == "id" else (x,0) for x in HEADERS  )) )
 				tableauindex=0
-				sentence_id = None
+				
+			
+			if sentence_id != sentence['sentence_origid']:
+				if DEBUGOUTPUT:
+					DEBUGSAMPLE+=1
+				
+				if sentence_id:
+					tableau.loc[tableauindex, "longueurpho"] = len("".join([ syntacdict[x]["normalized"] for x in syntacdict]))
+					synstruc(syntacdict,tableau,tableauindex)
+					#print(tableau.iloc[-1:])
+					tableauindex+=1
+					sentence_id= sentence['sentence_origid']
+					for elem in HEADERS:
+						tableau.loc[tableauindex,elem] = sentence_id if elem == "id" else 0
+					syntacdict=dict()
+			
+				else:
+					sentence_id= sentence['sentence_origid']	
+				
+			
+			word=y["tokens"][0]
+			word["word"]=betternorm(word["word"])
+			word["normalized"]=betternorm(word["normalized"])
+			
+			if word["word"] and word["word"] != word["normalized"]:
+				alignement=alignage(word["word"],word["normalized"])
+				if alignement:
+					
+					align1, align2,align3,align4,align5 = alignement[0]
+					for orig,dialect in zip(align1, align2):
+						if orig != dialect:
+							featname="var_"+orig+"+"+dialect
+							phonocorr[featname]+=1
+							if featname in HEADERS:
+								tableau.loc[tableauindex, featname] += 1
+							
+				else:
+					logging.error("Problème d'alignement pour la paire "+word["word"]+" "+word["normalized"]) 
+			
 				
 				#print(tableauindex,sentence_id)
 			
