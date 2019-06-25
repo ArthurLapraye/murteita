@@ -24,9 +24,9 @@ punctuation=" &~#\"'({[-|`_\^@)]°=+}$^¨%µ*!:;,?./§1234567890"
 same=[("à","a")]
 
 
-HEADERS=["id","longueur","longueurpho","t_ass","n_ass","mp_ass","n_n","glott_ass","otherass","word_t","word_n","word_glott","props"]+
+HEADERS=(["id","longueur","longueurpho","t_ass","n_ass","mp_ass","n_n","glott_ass","otherass","word_t","word_n","word_glott","props"]+
 		list(map(lambda x : "syn_"+x,["interrog","vs","sv","os","so","vo","ov","svo","sov","ovs","osv","vso","vos","sv"]))+
-		list(map(lambda x : "var_"+ x, ['ö+w', 'y+o', 'n+w', 'o+ə', 'a+ə', 'y+a', 'ä+o', 'y+e', 'ö+e', 'u+y', 'e+ᴏ', 'u+e', 'e+y', 'i+ö', 'm+n', 'u+i', 'o+ö', 'o+e', 'a+ᴏ', 'y+i', 'ä+y', 'ö+y', 'ä+ə', 'u+ö', 'ö+o', 'ä+ö', 'y+u', 'i+ə', 'i+y', 'n+g', 'e+u', 'o+ᴏ', 'i+u', 'd+δ', 'd+w', 'o+i', 'n+p', 'y+ö', 'i+j', 'y+ä', 'a+ä', 'd+t', 'e+ə', 'i+o', 't+d', 'ö+ä', 'u+a', 'e+a', 'j+i', 'n+k', 'i+ä', 'o+u', 'a+e', 'n+s', 'n+r', 'd+j', 'a+u', 'n+t']))
+		list(map(lambda x : "var_"+ x, ['ö+w', 'y+o', 'n+w', 'o+ə', 'a+ə', 'y+a', 'ä+o', 'y+e', 'ö+e', 'u+y', 'e+ᴏ', 'u+e', 'e+y', 'i+ö', 'm+n', 'u+i', 'o+ö', 'o+e', 'a+ᴏ', 'y+i', 'ä+y', 'ö+y', 'ä+ə', 'u+ö', 'ö+o', 'ä+ö', 'y+u', 'i+ə', 'i+y', 'n+g', 'e+u', 'o+ᴏ', 'i+u', 'd+ð', 'd+w', 'o+i', 'n+p', 'y+ö', 'i+j', 'y+ä', 'a+ä', 'd+t', 'e+ə', 'i+o', 't+d', 'ö+ä', 'u+a', 'e+a', 'j+i', 'n+k', 'i+ä', 'o+u', 'a+e', 'n+s', 'n+r', 'd+j', 'a+u', 'n+t'])) )
 
 
 NORMALFLAG=True
@@ -207,10 +207,10 @@ def synstruc(syntacdic,tableau,tableauindex):
 					proporders[elem]["obj"]=e
 				
 				if msd.get("SUBCAT",None) == "Interr":
-					tableau.loc[tableauindex, "interrog"] += 1
+					tableau.loc[tableauindex, "syn_interrog"] += 1
 				
 				if msd.get("CLIT",None) and msd.get("CLIT",None).startswith("Qst"):
-					tableau.loc[tableauindex, "interrog"] += 1
+					tableau.loc[tableauindex, "syn_interrog"] += 1
 					
 				if word["pos"] == "C":
 					tableau.loc[tableauindex, "props"] += 1
