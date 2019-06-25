@@ -49,14 +49,15 @@ if __name__=="__main__":
 	
 	with open("sortie.arff","w") as outfile:
 		outfile.write("@relation murteita\n")
-		outfile.write("@attribute nimi { \""+"\",\"".join(murteita.keys())+"\"}\n")
+		
 		for e in f:
 			outfile.write("@attribute "+e+" "+"numeric\n")
-	
+		
+		outfile.write("@attribute nimi { \""+"\",\"".join(murteita.keys())+"\"}\n")
 		
 		outfile.write("@data\n")
 		for elem in murteita:
-			outfile.write("\""+elem+","+",".join((str(murteita[elem][e]) for e in f))+"\n")
+			outfile.write(",".join((str(murteita[elem][e]) for e in f))+",\""+elem+"\"\n")
 			
 	
 	
