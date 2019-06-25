@@ -23,6 +23,12 @@ punctuation=" &~#\"'({[-|`_\^@)]°=+}$^¨%µ*!:;,?./§1234567890"
 
 same=[("à","a")]
 
+
+HEADERS=["id","longueur","longueurpho","t_ass","n_ass","mp_ass","n_n","glott_ass","otherass","word_t","word_n","word_glott","props"]+
+		list(map(lambda x : "syn_"+x,["interrog","vs","sv","os","so","vo","ov","svo","sov","ovs","osv","vso","vos","sv"]))+
+		list(map(lambda x : "var_"+ x, ['ö+w', 'y+o', 'n+w', 'o+ə', 'a+ə', 'y+a', 'ä+o', 'y+e', 'ö+e', 'u+y', 'e+ᴏ', 'u+e', 'e+y', 'i+ö', 'm+n', 'u+i', 'o+ö', 'o+e', 'a+ᴏ', 'y+i', 'ä+y', 'ö+y', 'ä+ə', 'u+ö', 'ö+o', 'ä+ö', 'y+u', 'i+ə', 'i+y', 'n+g', 'e+u', 'o+ᴏ', 'i+u', 'd+δ', 'd+w', 'o+i', 'n+p', 'y+ö', 'i+j', 'y+ä', 'a+ä', 'd+t', 'e+ə', 'i+o', 't+d', 'ö+ä', 'u+a', 'e+a', 'j+i', 'n+k', 'i+ä', 'o+u', 'a+e', 'n+s', 'n+r', 'd+j', 'a+u', 'n+t']))
+
+
 NORMALFLAG=True
 DEBUGOUTPUT=False
 DEBUGSAMPLE=1
@@ -222,7 +228,7 @@ def synstruc(syntacdic,tableau,tableauindex):
 		if not (DEBUGSAMPLE % 101) :
 			print(alignementstring)
 		
-		tableau.loc[tableauindex, alignementstring] += 1
+		tableau.loc[tableauindex, "syn_"+alignementstring] += 1
 				
 				
 				
@@ -250,8 +256,6 @@ if __name__=="__main__":
 	title=None
 	assdict=defaultdict(str)
 	
-	HEADERS=["id","longueur","longueurpho","t_ass","n_ass","mp_ass","n_n","glott_ass","otherass","word_t","word_n","word_glott","interrog","props","vs","sv","os","so","vo","ov","svo","sov","ovs","osv","vso","vos","sv"]+list(map(lambda x : "var_"+ x, ['ö+w', 'y+o', 'n+w', 'o+ə', 'a+ə', 'y+a', 'ä+o', 'y+e', 'ö+e', 'u+y', 'e+ᴏ', 'u+e', 'e+y', 'i+ö', 'm+n', 'u+i', 'o+ö', 'o+e', 'a+ᴏ', 'y+i', 'ä+y', 'ö+y', 'ä+ə', 'u+ö', 'ö+o', 'ä+ö', 'y+u', 'i+ə', 'i+y', 'n+g', 'e+u', 'o+ᴏ', 'i+u', 'd+δ', 'd+w', 'o+i', 'n+p', 'y+ö', 'i+j', 'y+ä', 'a+ä', 'd+t', 'e+ə', 'i+o', 't+d', 'ö+ä', 'u+a', 'e+a', 'j+i', 'n+k', 'i+ä', 'o+u', 'a+e', 'n+s', 'n+r', 'd+j', 'a+u', 'n+t']))
-
 	NONNUMHEADERS=["id"]
 	headershelp="""id : id de la phrase
 				  longueur : longueur en mot de la phrase
