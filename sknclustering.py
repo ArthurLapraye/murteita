@@ -19,7 +19,7 @@ if __name__=="__main__":
 		data=x.sum(axis=0,skipna = True)
 		lpho=data["longueurpho"]
 		
-		for e in HEADERS:
+		for e in x.columns:
 			if e.endswith("ass"):
 				finalfeats.add(e)
 				if e[0]=="t":
@@ -51,13 +51,13 @@ if __name__=="__main__":
 		outfile.write("@relation murteita\n")
 		
 		for e in f:
-			outfile.write("@attribute "+e+" "+"numeric\n")
+			outfile.write("@attribute \""+e+"\" "+"numeric\n")
 		
 		outfile.write("@attribute nimi { \""+"\",\"".join(murteita.keys())+"\"}\n")
 		
 		outfile.write("@data\n")
 		for elem in murteita:
-			outfile.write(",".join((str(100*murteita[elem].get(e, "?")) for e in f))+",\""+elem+"\"\n")
+			outfile.write(",".join((str(10000*murteita[elem].get(e, 0)) for e in f)) +",\""+elem+"\"\n")
 			
 	
 	
