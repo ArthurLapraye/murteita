@@ -57,7 +57,7 @@ if __name__=="__main__":
 		
 		outfile.write("@data\n")
 		for elem in murteita:
-			outfile.write(",".join((str(murteita[elem][e]) for e in f))+",\""+elem+"\"\n")
+			outfile.write(",".join((str(100*murteita[elem].get(e, "?")) for e in f))+",\""+elem+"\"\n")
 			
 	
 	

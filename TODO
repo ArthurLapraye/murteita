@@ -12,11 +12,14 @@ Clustering sur traits phonos, traits morphos, traits syntaxiques, séparément e
 ## FAIT
 
 	=> rajouter le trait binaire SV vs VS.
-
-## En cours
-
+	
+	=> trait SOV SVO OVS OSV VSO VOS
+	
 	=> finir l'extraction des traits de sandhi pour chaque phrase, sandhi total et partiel
 		=> utiliser biopairwise pour variations de phonèmes simples
+
+
+## En cours
 
 ## À faire :
 
@@ -25,6 +28,6 @@ Clustering sur traits phonos, traits morphos, traits syntaxiques, séparément e
 
 	=> Organiser des listes de cognats par lieu 
 	=> coder les phrases existentielles ?
+	 
 	
-	=> trait SOV SVO OVS OSV VSO VOS 
-	
+	=> JOS EI = JOLLEI

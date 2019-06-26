@@ -25,8 +25,8 @@ same=[("à","a")]
 
 
 HEADERS=(["id","longueur","longueurpho","t_ass","n_ass","mp_ass","n_n","glott_ass","otherass","word_t","word_n","word_glott","props"]+
-		list(map(lambda x : "syn_"+x,["interrog","vs","sv","os","so","vo","ov","svo","sov","ovs","osv","vso","vos","sv"]))+
-		list(map(lambda x : "var_"+ x, ['ö+w', 'y+o', 'n+w', 'o+ə', 'a+ə', 'y+a', 'ä+o', 'y+e', 'ö+e', 'u+y', 'e+ᴏ', 'u+e', 'e+y', 'i+ö', 'm+n', 'u+i', 'o+ö', 'o+e', 'a+ᴏ', 'y+i', 'ä+y', 'ö+y', 'ä+ə', 'u+ö', 'ö+o', 'ä+ö', 'y+u', 'i+ə', 'i+y', 'n+g', 'e+u', 'o+ᴏ', 'i+u', 'd+ð', 'd+w', 'o+i', 'n+p', 'y+ö', 'i+j', 'y+ä', 'a+ä', 'd+t', 'e+ə', 'i+o', 't+d', 'ö+ä', 'u+a', 'e+a', 'j+i', 'n+k', 'i+ä', 'o+u', 'a+e', 'n+s', 'n+r', 'd+j', 'a+u', 'n+t'])) )
+		list(map(lambda x : "syn_"+x,["interrog","vs","sv","os","so","vo","ov","svo","sov","ovs","osv","vso","vos","sv"])))
+	#	list(map(lambda x : "var_"+ x, ['ö+w', 'y+o', 'n+w', 'o+ə', 'a+ə', 'y+a', 'ä+o', 'y+e', 'ö+e', 'u+y', 'e+ᴏ', 'u+e', 'e+y', 'i+ö', 'm+n', 'u+i', 'o+ö', 'o+e', 'a+ᴏ', 'y+i', 'ä+y', 'ö+y', 'ä+ə', 'u+ö', 'ö+o', 'ä+ö', 'y+u', 'i+ə', 'i+y', 'n+g', 'e+u', 'o+ᴏ', 'i+u', 'd+ð', 'd+w', 'o+i', 'n+p', 'y+ö', 'i+j', 'y+ä', 'a+ä', 'd+t', 'e+ə', 'i+o', 't+d', 'ö+ä', 'u+a', 'e+a', 'j+i', 'n+k', 'i+ä', 'o+u', 'a+e', 'n+s', 'n+r', 'd+j', 'a+u', 'n+t'])) )
 
 
 NORMALFLAG=True
@@ -47,8 +47,8 @@ def betternorm(s):
 	try:
 		z=re2.sub("ð",re1.sub("o",s))
 	except TypeError as e:
-		logging.error(e,"at",s)
-		return None
+		logging.error("Type Error :"+str(e)+"at"+str(s))
+		return s
 		
 	return z
 	
@@ -339,8 +339,10 @@ if __name__=="__main__":
 						if orig != dialect:
 							featname="var_"+orig+"+"+dialect
 							phonocorr[featname]+=1
-							if featname in HEADERS:
-								tableau.loc[tableauindex, featname] += 1
+							if featname in tableau.columns:
+								tableau.loc[tableauindex, featname] += 1.0
+							else:
+								tableau.loc[tableauindex, featname]=1.0
 							
 				else:
 					logging.error("Problème d'alignement pour la paire "+word["word"]+" "+word["normalized"]) 
