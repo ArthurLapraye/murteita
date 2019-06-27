@@ -5,15 +5,9 @@ import os
 import pandas as pd
 import folium
 import csv
+from folium.plugins import HeatMap
 
-def regeneratemap(dic):
-	carte = folium.Map(location=[65,25],zoom_start=5,control_scale=True)
-	for elem in dic:
-		folium.Marker(location=dic[elem],
-		popup=elem,
-		icon=folium.Icon(color="red",icon="ok-sign")).add_to(dialectloc)
-	
-	return carte
+
 	
 
 if __name__=="__main__":
@@ -22,14 +16,11 @@ if __name__=="__main__":
 	finalfeats=set()
 	kyl=dict()
 	
-	with open("parishes") as fi:
+	with open("parishes.csv") as fi:
 		for (ville,n,lat,lo) in csv.reader(fi):
 			if ville != "Nom":
 				print(ville)
 				kyl[n]=(ville,float(lat),float(lo))
-				
-	
-	dialectloc=regeneratemap(kyl)
 	
 	for elem in sys.argv[1:]:
 		feats=dict()
@@ -72,34 +63,29 @@ if __name__=="__main__":
 		
 		murteita[nimi2]=feats
 	
-	f=list(sorted(finalfeats))
+	features=list(sorted(finalfeats))
 	
 	with open("sortie.arff","w") as outfile:
 		outfile.write("@relation murteita\n")
 		
-		for e in f:
-			outfile.write("@attribute \""+e+"\" "+"numeric\n")
+		for f in features:
+			outfile.write("@attribute \""+f+"\" "+"numeric\n")
 		
 		outfile.write("@attribute nimi { \""+"\",\"".join(murteita.keys())+"\"}\n")
 		
 		outfile.write("@data\n")
 		for elem in murteita:
-			outfile.write(",".join((str(10000*murteita[elem].get(e, 0)) for e in f)) +",\""+elem+"\"\n")
+			outfile.write(",".join((str(10000*murteita[elem].get(e, 0)) for f in features)) +",\""+elem+"\"\n")
 	
-	for trait in f:
-		maximum=max(murteita[elem].get(f,0) for elem in murteita)
+	
+	with open("sortie.csv","w") as outfile:
+		outfile.write("nimi,lat,lo,"+",".join(features)+"\n")
 		
-		locations=list()
+		for elem in murteita:
+			outfile.write(",".join(str(kyl[elem]))+",".join( ( str(murteita[elem].get(e, 0)) for f in features ) )+"\n")
+	
+	
 		
-		for ville in kyl:
-			lat=kyl[ville][1]
-			lo=kyl[ville][2]
-			featvalue=murteita[ville][f]
-			locations.append( (lat,lo,featvalue))
-			
-		HeatMap(locations,max_val=maximum).add_to(dialectloc)
-		dialectloc.save("/tmp/sortie_"+f)
-		dialectloc=regeneratemap(kyl)
 		
 		
 		

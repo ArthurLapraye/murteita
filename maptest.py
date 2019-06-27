@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import folium
-
+from folium.plugins import HeatMap
 import csv
 
 dialectloc = folium.Map(location=[65,25],zoom_start=5,control_scale=True)
