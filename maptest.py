@@ -4,7 +4,7 @@ import folium
 
 import csv
 
-dialectloc = folium.Map(location=[65,25],zoom_start=6,control_scale=True)
+dialectloc = folium.Map(location=[65,25],zoom_start=5,control_scale=True)
 
 kyl=dict()
 

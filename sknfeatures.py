@@ -335,7 +335,19 @@ if __name__=="__main__":
 				if alignement:
 					
 					align1, align2,align3,align4,align5 = alignement[0]
+					prev=None
 					for orig,dialect in zip(align1, align2):
+						if prev:
+							(o1,d1)=prev
+							if o1+orig != d1+dialect:
+								featname="var2_"+o1+orig+"+"+d1+dialect
+								phonocorr[featname]+=1
+								if featname in tableau.columns:
+									tableau.loc[tableauindex, featname] += 1.0
+								else:
+									tableau.loc[tableauindex, featname]=1.0
+								
+							
 						if orig != dialect:
 							featname="var_"+orig+"+"+dialect
 							phonocorr[featname]+=1
@@ -343,7 +355,14 @@ if __name__=="__main__":
 								tableau.loc[tableauindex, featname] += 1.0
 							else:
 								tableau.loc[tableauindex, featname]=1.0
-							
+						
+						prev=(orig,dialect)
+				
+				elif word["normalized"] in ["jollei","jolle"]:
+					if "morph_jollei" in tableau.columns:
+						tableau.loc[tableauindex, "morph_jollei"] += 1.0
+					else:
+						tableau.loc[tableauindex, "morph_jollei"]=1.0					
 				else:
 					logging.error("Problème d'alignement pour la paire "+word["word"]+" "+word["normalized"]) 
 			
